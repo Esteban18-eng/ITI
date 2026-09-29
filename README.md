@@ -35,7 +35,7 @@ Portal institucional para gestionar estudiantes, seguimiento pedagógico, ajuste
 
 ## Puesta en marcha
 
-1. Copia las variables de entorno:
+1. Para desarrollo local, copia `.env.example` como `.env` y completa las variables:
 
 ```env
 VITE_SUPABASE_URL=https://tu-proyecto.supabase.co
@@ -45,6 +45,17 @@ VITE_SUPABASE_ANON_KEY=tu-anon-key
 2. Ejecuta `supabase/schema.sql` en el SQL Editor de Supabase.
 3. Crea los usuarios en Supabase Auth y asigna su rol en `public.profiles`.
 4. Ejecuta `npm.cmd run dev`.
+
+## Despliegue en Vercel
+
+No subas `.env` al repositorio. Importa el repositorio en Vercel y agrega estas variables en **Project Settings > Environment Variables** para los entornos `Production`, `Preview` y/o `Development`:
+
+- `VITE_SUPABASE_URL`: URL raíz del proyecto, por ejemplo `https://tu-proyecto.supabase.co` (sin `/rest/v1/`).
+- `VITE_SUPABASE_ANON_KEY`: clave publicable/anon del proyecto Supabase.
+
+Vercel las incorpora durante el build de Vite. Después de guardarlas, vuelve a desplegar el proyecto. `src/lib/supabase.ts` es el archivo de conexión y sí se sube normalmente a Git; `.env.example` es solo una plantilla sin credenciales reales.
+
+La clave anon es visible en el bundle del navegador por diseño; la protección de datos depende de las políticas RLS. Nunca agregues `SUPABASE_SERVICE_ROLE_KEY` como variable `VITE_*` ni la uses en el frontend. Esa clave solo se configura como secreto de la Edge Function en Supabase.
 
 Para activar las invitaciones del Administrador, instala y despliega `supabase/functions/invite-user/index.ts` como Edge Function `invite-user`. Supabase proporciona `SUPABASE_SERVICE_ROLE_KEY` solo en el entorno de la función; nunca la pongas en `.env` del frontend.
 
